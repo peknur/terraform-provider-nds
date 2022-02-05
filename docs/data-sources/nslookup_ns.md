@@ -29,7 +29,6 @@ data "nds_nslookup_ns" "test" {
 
 - **id** (String) The ID of this resource.
 - **resolver** (Block List, Max: 1) Use custom resolver (see [below for nested schema](#nestedblock--resolver))
-- **wait** (Number) Wait N secnds for name to propagate
 
 ### Read-Only
 

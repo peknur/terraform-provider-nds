@@ -19,12 +19,6 @@ func commonDataSource() schema.Resource {
 				Type:     schema.TypeString,
 				Required: true,
 			},
-			"wait": {
-				Description: "Wait N secnds for name to propagate",
-				Type:        schema.TypeInt,
-				Optional:    true,
-				Default:     0,
-			},
 			"resolver": {
 				Description: "Use custom resolver",
 				Type:        schema.TypeList,
