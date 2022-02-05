@@ -1,4 +1,6 @@
 #  Net Data Source Terraform Provider
+[![Tests](https://github.com/peknur/terraform-provider-nds/actions/workflows/test.yml/badge.svg)](https://github.com/peknur/terraform-provider-nds/actions/workflows/test.yml)
+[![golangci-lint](https://github.com/peknur/terraform-provider-nds/actions/workflows/golangci-lint.yml/badge.svg)](https://github.com/peknur/terraform-provider-nds/actions/workflows/golangci-lint.yml)
 
 ## Build provider
 
