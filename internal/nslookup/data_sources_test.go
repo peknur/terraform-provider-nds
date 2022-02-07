@@ -98,7 +98,7 @@ func TestAccSRV(t *testing.T) {
 					resource.TestCheckResourceAttr("data.nds_nslookup_srv.test", "data.0.target", "example.com."),
 					resource.TestCheckResourceAttr("data.nds_nslookup_srv.test", "data.0.priority", "5"),
 					resource.TestCheckResourceAttr("data.nds_nslookup_srv.test", "data.0.port", "5222"),
-					resource.TestCheckResourceAttr("data.nds_nslookup_srv.test", "data.#", "1"),
+					resource.TestCheckResourceAttr("data.nds_nslookup_srv.test", "data.#", "2"),
 				),
 			},
 		}},
