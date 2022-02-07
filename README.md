@@ -3,30 +3,42 @@
 [![golangci-lint](https://github.com/peknur/terraform-provider-nds/actions/workflows/golangci-lint.yml/badge.svg)](https://github.com/peknur/terraform-provider-nds/actions/workflows/golangci-lint.yml)
 [![release](https://github.com/peknur/terraform-provider-nds/actions/workflows/release.yml/badge.svg)](https://github.com/peknur/terraform-provider-nds/actions/workflows/release.yml)
 
-## Build provider
+Net Data Source Terraform Provider enables users to query network data sources.
 
-Run the following command to build the provider
+## Documentation
+Full documentation is available on the Terraform registry website:  
+https://registry.terraform.io/providers/peknur/nds/latest/docs
 
-```shell
-$ make build
-```
+## Example usage
+```terraform
+terraform {
+  required_providers {
+    nds = {
+      source  = "peknur/nds"
+      version = ">= 0.1.0"
+    }
+  }
+}
 
-## Test sample configuration
+# Use custom resolver to get public IP address
+data "nds_nslookup_ip" "my_ip" {
+  name = "myip.opendns.com"
+  resolver {
+    addr = "208.67.222.222" # resolver1.opendns.com
+  }
+}
 
-First, build and install the provider.
+data "nds_nslookup_ptr" "my_ptr" {
+  name = data.nds_nslookup_ip.my_ip.data[0]
+}
 
-```shell
-$ make install
-```
+output "my_ip_reverse_name" {
+  value = data.nds_nslookup_ptr.my_ptr.data
+}
 
-Then, navigate to the `examples` directory. 
+# terraform output 
+# my_ip_reverse_name = tolist([
+#  "a.b.c.example.com.",
+# ])
 
-```shell
-$ cd examples
-```
-
-Run the following command to initialize the workspace and apply the sample configuration.
-
-```shell
-$ terraform init && terraform apply
 ```
