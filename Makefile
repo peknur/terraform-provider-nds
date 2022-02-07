@@ -25,4 +25,5 @@ testacc:
 	TF_ACC=1 go test $(TEST) -v $(TESTARGS) -timeout 120m
 
 docs:
+	terraform fmt -recursive examples/
 	tfplugindocs
