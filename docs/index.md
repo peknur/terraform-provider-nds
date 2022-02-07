@@ -9,11 +9,28 @@ description: |-
 # Net Data Source Provider
 
 
-Net Data Source Terraform Provider enables users to query network data sources 
+Net Data Source Terraform Provider enables users to query network data sources.
+
+## nslookup
+`nds_nslookup` data sources provides access to dns queries using local resolver.  
+Custom resolver can be defined to bypass local resolver and query directly from specific nameserver.
+
+_Note: Custom resolver doesn't work correctly on Windows hosts_ 
+
 
 ## Examples
-### Get Terraform host public IP address
+### Get Terraform host public IP address and reverse name
 ```terraform
+terraform {
+  required_providers {
+    nds = {
+      source  = "peknur/nds"
+      version = ">= 0.1.0"
+    }
+  }
+}
+
+# Use custom resolver to get public IP address
 data "nds_nslookup_ip" "my_ip" {
   name = "myip.opendns.com"
   resolver {
@@ -21,9 +38,16 @@ data "nds_nslookup_ip" "my_ip" {
   }
 }
 
-# terraform output my_ip
-output "my_ip" {
-  value       = data.nds_nslookup_ip.my_ip.data[0]
-  description = "My Public IP address"
+data "nds_nslookup_ptr" "my_ptr" {
+  name = data.nds_nslookup_ip.my_ip.data[0]
 }
+
+output "my_ip_reverse_name" {
+  value = data.nds_nslookup_ptr.my_ptr.data
+}
+
+# terraform output 
+# my_ip_reverse_name = tolist([
+#  "a.b.c.example.com.",
+# ])
 ```
