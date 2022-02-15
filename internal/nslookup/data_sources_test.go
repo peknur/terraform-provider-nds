@@ -16,10 +16,15 @@ func TestAccIP(t *testing.T) {
 				data "nds_nslookup_ip" "test" {
 					name = "example.debsu.fi"
 				}
+				data "nds_nslookup_ip" "cname_test" {
+					name = "cname-example.debsu.fi"
+				}
 				`,
 				Check: resource.ComposeTestCheckFunc(
 					resource.TestCheckResourceAttr("data.nds_nslookup_ip.test", "data.0", "127.0.0.1"),
+					resource.TestCheckResourceAttr("data.nds_nslookup_ip.cname_test", "data.0", "127.0.0.1"),
 					resource.TestCheckResourceAttr("data.nds_nslookup_ip.test", "data.#", "1"),
+					resource.TestCheckResourceAttr("data.nds_nslookup_ip.cname_test", "data.#", "1"),
 				),
 			},
 		}},
@@ -114,7 +119,10 @@ func TestAccCustomResolver(t *testing.T) {
 				data "nds_nslookup_ip" "my_ip" {
 					name = "myip.opendns.com"
 					resolver {
-						addr = "208.67.222.222" # resolver1.opendns.com
+						addr    = "208.67.222.222" # resolver1.opendns.com
+						proto   = "udp"
+						port    = 53
+						timeout = 5 
 					}
 				}
 				`,
