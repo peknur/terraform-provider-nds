@@ -36,3 +36,10 @@ output "my_ip" {
 #   "93.184.216.34",
 #   "2606:2800:220:1:248:1893:25c8:1946",
 # ])
+
+# Retry lookup 5 times with 10 sec interval 
+data "nds_nslookup_ip" "retry_example" {
+  name           = "example.com"
+  retry          = 5
+  retry_interval = 10
+}

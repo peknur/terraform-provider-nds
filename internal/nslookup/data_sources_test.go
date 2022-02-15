@@ -19,6 +19,11 @@ func TestAccIP(t *testing.T) {
 				data "nds_nslookup_ip" "cname_test" {
 					name = "cname-example.debsu.fi"
 				}
+				data "nds_nslookup_ip" "retry_test" {
+					name  			= "example.debsu.fi"
+					retry 			= 1
+					retry_interval 	= 5 
+				}
 				`,
 				Check: resource.ComposeTestCheckFunc(
 					resource.TestCheckResourceAttr("data.nds_nslookup_ip.test", "data.0", "127.0.0.1"),

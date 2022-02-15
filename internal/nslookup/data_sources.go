@@ -3,8 +3,11 @@ package nslookup
 import (
 	"context"
 	"fmt"
+	"net"
 	"strings"
+	"time"
 
+	"github.com/hashicorp/terraform-plugin-log/tflog"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/validation"
@@ -62,6 +65,24 @@ func commonDataSource() schema.Resource {
 
 func DataSourceLookupIP() *schema.Resource {
 	s := commonDataSource()
+	s.Schema["retry"] = &schema.Schema{
+		Description: "Number of retries if previous lookup returns non-critical error",
+		Type:        schema.TypeInt,
+		Optional:    true,
+		ValidateDiagFunc: validation.ToDiagFunc(
+			validation.IntBetween(0, 100),
+		),
+		Default: 0,
+	}
+	s.Schema["retry_interval"] = &schema.Schema{
+		Description: "Retry interval in seconds if `retry` > `0`",
+		Type:        schema.TypeInt,
+		Optional:    true,
+		ValidateDiagFunc: validation.ToDiagFunc(
+			validation.IntBetween(5, 600),
+		),
+		Default: 10,
+	}
 	s.Schema["data"] = &schema.Schema{
 		Type:     schema.TypeList,
 		Computed: true,
@@ -74,11 +95,36 @@ func DataSourceLookupIP() *schema.Resource {
 }
 
 func readLookupIPContext(ctx context.Context, d *schema.ResourceData, meta interface{}) (diags diag.Diagnostics) {
+	var err error
 	l := NewLookupFromResourceData(ctx, d)
 	name := strings.ToLower(d.Get("name").(string))
-	records, err := l.Address(ctx, name)
-	if err != nil {
-		return diag.FromErr(err)
+	retry := d.Get("retry").(int)
+	retryInterval := d.Get("retry_interval").(int)
+	records := make([]string, 0)
+	for i := 0; i <= retry; i++ {
+		select {
+		case <-ctx.Done():
+			return diag.FromErr(ctx.Err())
+		default:
+			records, err = l.Address(ctx, name)
+			if err == nil {
+				break
+			}
+			if err != nil {
+				switch e := err.(type) {
+				case *net.DNSError:
+					if !e.IsNotFound && !e.IsTemporary {
+						return diag.FromErr(err)
+					}
+				default:
+					return diag.FromErr(err)
+				}
+			}
+			time.Sleep(time.Duration(retryInterval) * time.Second)
+			if i > 0 {
+				tflog.Info(ctx, fmt.Sprintf("retrying '%s' ip address lookup (%d/%d)", name, i, retry))
+			}
+		}
 	}
 	if len(records) < 1 {
 		return diag.Errorf("'%s' returned empty record set", name)
@@ -88,9 +134,16 @@ func readLookupIPContext(ctx context.Context, d *schema.ResourceData, meta inter
 }
 
 func DataSourceLookupTXT() *schema.Resource {
-	s := DataSourceLookupIP()
+	s := commonDataSource()
+	s.Schema["data"] = &schema.Schema{
+		Type:     schema.TypeList,
+		Computed: true,
+		Elem: &schema.Schema{
+			Type: schema.TypeString,
+		},
+	}
 	s.ReadContext = readLookupTXTContext
-	return s
+	return &s
 }
 
 func readLookupTXTContext(ctx context.Context, d *schema.ResourceData, meta interface{}) (diags diag.Diagnostics) {
@@ -108,7 +161,7 @@ func readLookupTXTContext(ctx context.Context, d *schema.ResourceData, meta inte
 }
 
 func DataSourceLookupPTR() *schema.Resource {
-	s := DataSourceLookupIP()
+	s := DataSourceLookupTXT()
 	s.ReadContext = readLookupPTRContext
 	return s
 }
@@ -128,7 +181,7 @@ func readLookupPTRContext(ctx context.Context, d *schema.ResourceData, meta inte
 }
 
 func DataSourceLookupNS() *schema.Resource {
-	s := DataSourceLookupIP()
+	s := DataSourceLookupTXT()
 	s.ReadContext = readLookupNSContext
 	return s
 }

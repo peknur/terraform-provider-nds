@@ -12,7 +12,7 @@ description: |-
 Net Data Source Terraform Provider enables users to query network data sources.
 
 ## nslookup
-`nds_nslookup` data sources provides access to dns queries using local resolver.  
+`nds_nslookup` data sources provides access to DNS queries using local resolver.  
 Custom resolver can be defined to bypass local resolver and query directly from specific nameserver.
 
 _Note: Custom resolver doesn't work correctly on Windows hosts_ 
