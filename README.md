@@ -1,9 +1,10 @@
-#  Net Data Source Terraform Provider
+#  Network Data Source Terraform Provider
 [![Tests](https://github.com/peknur/terraform-provider-nds/actions/workflows/test.yml/badge.svg)](https://github.com/peknur/terraform-provider-nds/actions/workflows/test.yml)
 [![golangci-lint](https://github.com/peknur/terraform-provider-nds/actions/workflows/golangci-lint.yml/badge.svg)](https://github.com/peknur/terraform-provider-nds/actions/workflows/golangci-lint.yml)
 [![release](https://github.com/peknur/terraform-provider-nds/actions/workflows/release.yml/badge.svg)](https://github.com/peknur/terraform-provider-nds/actions/workflows/release.yml)
 
-Net Data Source Terraform Provider enables users to query network data sources.
+Network Data Source Terraform Provider enables users to query network data sources.  
+Currently there is only `nslookup` data source that can be used to run DNS queries with customizable resolver.
 
 ## Documentation
 Full documentation is available on the Terraform registry website:  
