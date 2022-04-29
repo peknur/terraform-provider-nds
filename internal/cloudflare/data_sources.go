@@ -33,7 +33,7 @@ func DataSourceIPRanges() *schema.Resource {
 	}
 }
 
-func readIPRangesContext(ctx context.Context, d *schema.ResourceData, meta interface{}) (diags diag.Diagnostics) {
+func readIPRangesContext(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
 	var ips []string
 	var err error
 	version := d.Get("ip_version").(int)
@@ -49,7 +49,7 @@ func readIPRangesContext(ctx context.Context, d *schema.ResourceData, meta inter
 	}
 
 	d.SetId(fmt.Sprintf("ipv%d_range", version))
-	d.Set("data", ips)
 
-	return diags
+	return diag.FromErr(d.Set("data", ips))
+
 }
