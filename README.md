@@ -4,7 +4,6 @@
 [![release](https://github.com/peknur/terraform-provider-nds/actions/workflows/release.yml/badge.svg)](https://github.com/peknur/terraform-provider-nds/actions/workflows/release.yml)
 
 Network Data Source Terraform Provider enables users to query network data sources.  
-Currently there is only `nslookup` data source that can be used to run DNS queries with customizable resolver.
 
 ## Documentation
 Full documentation is available on the Terraform registry website:  
